@@ -13,7 +13,7 @@ async function run() {
       ...github.context.repo,
       ref: `heads/${sourceBranchName}`,
     });
-    github.context.repo.
+
     await octokit.git.updateRef({
       ...github.context.repo,
       ref: `heads/${destBranchName}`,
