@@ -1,6 +1,9 @@
 name: 'Mirror Branch'
 description: 'Mirror a source branch to a destination branch within the same repository'
 inputs:
+  github-token:
+    description: '${{ secrets.GITHUB_TOKEN }}'
+    required: true
   source:
     description: 'Name of the source branch'
     required: true
