@@ -1,0 +1,29 @@
+{
+  "name": "mirror-branch-action",
+  "version": "0.1.0",
+  "description": "A Github Action to mirror one branch to another within the same repository",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jyasskin/mirror-branch-action.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/jyasskin/mirror-branch-action/issues"
+  },
+  "homepage": "https://github.com/jyasskin/mirror-branch-action#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.4",
+    "@actions/github": "^3.0.0"
+  },
+  "devDependencies": {
+    "@zeit/ncc": "^0.22.3",
+    "eslint": "^7.3.1",
+    "typescript": "^3.9.5"
+  }
+}
