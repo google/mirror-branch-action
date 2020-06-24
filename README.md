@@ -31,3 +31,7 @@ jobs:
 ```
 
 With `SOURCE_BRANCH_NAME` and `DESTINATION_BRANCH_NAME` replaced as appropriate.
+
+-----
+
+This is not an officially supported Google product.
