@@ -6922,6 +6922,7 @@ async function run() {
                 ...github.context.repo,
                 ref: `heads/${destBranchName}`,
                 sha: sourceBranchSha,
+                force: true,
             });
         }
         catch (error) {

@@ -1,6 +1,6 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import type  { OctokitResponse, GitUpdateRefResponseData } from '@octokit/types';
+import type { OctokitResponse, GitUpdateRefResponseData } from '@octokit/types';
 
 async function run(): Promise<void> {
   try {
@@ -28,6 +28,7 @@ async function run(): Promise<void> {
         ...github.context.repo,
         ref: `heads/${destBranchName}`,
         sha: sourceBranchSha,
+        force: true,
       });
     } catch (error) {
       if (error.message !== 'Reference does not exist') {
