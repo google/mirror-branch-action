@@ -30,14 +30,14 @@ async function run(): Promise<void> {
         sha: sourceBranchSha,
       });
     } catch (error) {
-      console.log(error, error.message, error.code, (error as Error).name);
-      // if (error.message !== 'Reference does not exist') {
-      //   throw error;
-      // }
+      console.log(error, error.message, error.errors, JSON.stringify(error.errors), (error as Error).name);
+      if (error.message !== 'Reference does not exist') {
+        throw error;
+      }
       console.log(`${destBranchName} does not exist. Creating it.`);
       result = await octokit.git.createRef({
         ...github.context.repo,
-        ref: `heads/${destBranchName}`,
+        ref: `refs/heads/${destBranchName}`,
         sha: sourceBranchSha,
       });
     }

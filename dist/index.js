@@ -6898,49 +6898,49 @@ module.exports = (promise, onFinally) => {
 
 "use strict";
 
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __webpack_require__(470);
 const github = __webpack_require__(469);
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
+async function run() {
+    try {
+        const githubToken = core.getInput('github-token');
+        const sourceBranchName = core.getInput('source');
+        const destBranchName = core.getInput('dest');
+        const octokit = github.getOctokit(githubToken);
+        const sourceBranchTip = await octokit.git.getRef({
+            ...github.context.repo,
+            ref: `heads/${sourceBranchName}`,
+        });
+        if (sourceBranchTip.data.object.type !== "commit") {
+            throw new Error(`Expected branch ${sourceBranchName} to resolve to a commit. Got a ${sourceBranchTip.data.object.type}.`);
+        }
+        const sourceBranchSha = sourceBranchTip.data.object.sha;
+        console.log(`Pushing ${sourceBranchName} (${sourceBranchSha}) to ${destBranchName}.`);
+        let result;
         try {
-            const githubToken = core.getInput('github-token');
-            const sourceBranchName = core.getInput('source');
-            const destBranchName = core.getInput('dest');
-            const octokit = github.getOctokit(githubToken);
-            const sourceBranchTip = yield octokit.git.getRef(Object.assign(Object.assign({}, github.context.repo), { ref: `heads/${sourceBranchName}` }));
-            if (sourceBranchTip.data.object.type !== "commit") {
-                throw new Error(`Expected branch ${sourceBranchName} to resolve to a commit. Got a ${sourceBranchTip.data.object.type}.`);
-            }
-            const sourceBranchSha = sourceBranchTip.data.object.sha;
-            console.log(`Pushing ${sourceBranchName} (${sourceBranchSha}) to ${destBranchName}.`);
-            let result;
-            try {
-                result = yield octokit.git.updateRef(Object.assign(Object.assign({}, github.context.repo), { ref: `heads/${destBranchName}`, sha: sourceBranchSha }));
-            }
-            catch (error) {
-                console.log(error, error.message, error.code, error.name);
-                if (error.message !== 'Reference does not exist') {
-                    throw error;
-                }
-                console.log(`${destBranchName} does not exist. Creating it.`);
-                result = yield octokit.git.createRef(Object.assign(Object.assign({}, github.context.repo), { ref: `heads/${destBranchName}`, sha: sourceBranchSha }));
-            }
-            console.log(`Set ${result.data.ref} to ${result.data.object.sha}.`);
+            result = await octokit.git.updateRef({
+                ...github.context.repo,
+                ref: `heads/${destBranchName}`,
+                sha: sourceBranchSha,
+            });
         }
         catch (error) {
-            core.setFailed(error.message);
+            console.log(error, error.message, error.errors, JSON.stringify(error.errors), error.name);
+            if (error.message !== 'Reference does not exist') {
+                throw error;
+            }
+            console.log(`${destBranchName} does not exist. Creating it.`);
+            result = await octokit.git.createRef({
+                ...github.context.repo,
+                ref: `refs/heads/${destBranchName}`,
+                sha: sourceBranchSha,
+            });
         }
-    });
+        console.log(`Set ${result.data.ref} to ${result.data.object.sha}.`);
+    }
+    catch (error) {
+        core.setFailed(error.message);
+    }
 }
 run();
 
