@@ -1,5 +1,6 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
+import type  { OctokitResponse, GitUpdateRefResponseData } from '@octokit/types';
 
 async function run(): Promise<void> {
   try {
@@ -21,11 +22,25 @@ async function run(): Promise<void> {
 
     console.log(`Pushing ${sourceBranchName} (${sourceBranchSha}) to ${destBranchName}.`);
 
-    const result = await octokit.git.updateRef({
-      ...github.context.repo,
-      ref: `heads/${destBranchName}`,
-      sha: sourceBranchSha,
-    })
+    let result: OctokitResponse<GitUpdateRefResponseData>;
+    try {
+      result = await octokit.git.updateRef({
+        ...github.context.repo,
+        ref: `heads/${destBranchName}`,
+        sha: sourceBranchSha,
+      });
+    } catch (error) {
+      console.log(error, error.message, error.code, (error as Error).name);
+      // if (error.message !== 'Reference does not exist') {
+      //   throw error;
+      // }
+      console.log(`${destBranchName} does not exist. Creating it.`);
+      result = await octokit.git.createRef({
+        ...github.context.repo,
+        ref: `heads/${destBranchName}`,
+        sha: sourceBranchSha,
+      });
+    }
 
     console.log(`Set ${result.data.ref} to ${result.data.object.sha}.`);
   } catch (error) {

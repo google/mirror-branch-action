@@ -6923,7 +6923,18 @@ function run() {
             }
             const sourceBranchSha = sourceBranchTip.data.object.sha;
             console.log(`Pushing ${sourceBranchName} (${sourceBranchSha}) to ${destBranchName}.`);
-            const result = yield octokit.git.updateRef(Object.assign(Object.assign({}, github.context.repo), { ref: `heads/${destBranchName}`, sha: sourceBranchSha }));
+            let result;
+            try {
+                result = yield octokit.git.updateRef(Object.assign(Object.assign({}, github.context.repo), { ref: `heads/${destBranchName}`, sha: sourceBranchSha }));
+            }
+            catch (error) {
+                console.log(error, error.message, error.code, error.name);
+                if (error.message !== 'Reference does not exist') {
+                    throw error;
+                }
+                console.log(`${destBranchName} does not exist. Creating it.`);
+                result = yield octokit.git.createRef(Object.assign(Object.assign({}, github.context.repo), { ref: `heads/${destBranchName}`, sha: sourceBranchSha }));
+            }
             console.log(`Set ${result.data.ref} to ${result.data.object.sha}.`);
         }
         catch (error) {
