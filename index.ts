@@ -30,7 +30,6 @@ async function run(): Promise<void> {
         sha: sourceBranchSha,
       });
     } catch (error) {
-      console.log(error, error.message, error.errors, JSON.stringify(error.errors), (error as Error).name);
       if (error.message !== 'Reference does not exist') {
         throw error;
       }

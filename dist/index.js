@@ -6925,7 +6925,6 @@ async function run() {
             });
         }
         catch (error) {
-            console.log(error, error.message, error.errors, JSON.stringify(error.errors), error.name);
             if (error.message !== 'Reference does not exist') {
                 throw error;
             }
