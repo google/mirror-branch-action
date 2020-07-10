@@ -22,7 +22,7 @@ jobs:
     steps:
     - name: Mirror action step
       id: mirror
-      uses: google/mirror-branch-action
+      uses: google/mirror-branch-action@v1.0
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         source: 'SOURCE_BRANCH_NAME'
