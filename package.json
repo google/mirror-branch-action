@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/jyasskin/mirror-branch-action#readme",
   "dependencies": {
-    "@actions/core": "^1.2.4",
+    "@actions/core": "^1.2.6",
     "@actions/github": "^3.0.0"
   },
   "devDependencies": {
