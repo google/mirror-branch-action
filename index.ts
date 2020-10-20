@@ -22,7 +22,7 @@ async function run(): Promise<void> {
   try {
     const githubToken = core.getInput('github-token');
     const sourceBranchName = core.getInput('source');
-    const destBranchName = core.getInput('dest');
+    const destBranchNames = JSON.parse(core.getInput('dest'));
 
     const octokit = github.getOctokit(githubToken);
     const sourceBranchTip = await octokit.git.getRef({
@@ -36,29 +36,31 @@ async function run(): Promise<void> {
 
     const sourceBranchSha = sourceBranchTip.data.object.sha;
 
-    console.log(`Pushing ${sourceBranchName} (${sourceBranchSha}) to ${destBranchName}.`);
+    destBranchNames.forEach(async (destBranchName: string) => {
+      console.log(`Pushing ${sourceBranchName} (${sourceBranchSha}) to ${destBranchName}.`);
 
-    let result: OctokitResponse<GitUpdateRefResponseData>;
-    try {
-      result = await octokit.git.updateRef({
-        ...github.context.repo,
-        ref: `heads/${destBranchName}`,
-        sha: sourceBranchSha,
-        force: true,
-      });
-    } catch (error) {
-      if (error.message !== 'Reference does not exist') {
-        throw error;
+      let result: OctokitResponse<GitUpdateRefResponseData>;
+      try {
+        result = await octokit.git.updateRef({
+          ...github.context.repo,
+          ref: `heads/${destBranchName}`,
+          sha: sourceBranchSha,
+          force: true,
+        });
+      } catch (error) {
+        if (error.message !== 'Reference does not exist') {
+          throw error;
+        }
+        console.log(`${destBranchName} does not exist. Creating it.`);
+        result = await octokit.git.createRef({
+          ...github.context.repo,
+          ref: `refs/heads/${destBranchName}`,
+          sha: sourceBranchSha,
+        });
       }
-      console.log(`${destBranchName} does not exist. Creating it.`);
-      result = await octokit.git.createRef({
-        ...github.context.repo,
-        ref: `refs/heads/${destBranchName}`,
-        sha: sourceBranchSha,
-      });
-    }
 
-    console.log(`Set ${result.data.ref} to ${result.data.object.sha}.`);
+      console.log(`Set ${result.data.ref} to ${result.data.object.sha}.`);
+    })
   } catch (error) {
     core.setFailed(error.message);
   }
