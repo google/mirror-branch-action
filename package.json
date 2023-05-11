@@ -23,10 +23,10 @@
   },
   "devDependencies": {
     "@octokit/types": "^5.0.1",
-    "@zeit/ncc": "^0.22.3",
+    "@vercel/ncc": "^0.36.1",
     "eslint": "^7.3.1",
     "husky": "^4.2.5",
-    "typescript": "^3.9.5"
+    "typescript": "^5.0.4"
   },
   "husky": {
     "hooks": {

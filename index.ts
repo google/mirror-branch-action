@@ -16,7 +16,7 @@
 
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import type { OctokitResponse, GitUpdateRefResponseData } from '@octokit/types';
+import type { GitUpdateRefResponseData, OctokitResponse } from '@octokit/types';
 
 async function run(): Promise<void> {
   try {
@@ -46,7 +46,7 @@ async function run(): Promise<void> {
         sha: sourceBranchSha,
         force: true,
       });
-    } catch (error) {
+    } catch (error: any) {
       if (error.message !== 'Reference does not exist') {
         throw error;
       }
@@ -59,7 +59,7 @@ async function run(): Promise<void> {
     }
 
     console.log(`Set ${result.data.ref} to ${result.data.object.sha}.`);
-  } catch (error) {
+  } catch (error: any) {
     core.setFailed(error.message);
   }
 }
